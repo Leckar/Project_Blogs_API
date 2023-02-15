@@ -1,5 +1,6 @@
 const express = require('express');
 const { userController } = require('../controllers');
+const tokenValidator = require('../middlewares/tokenValidator');
 const {
   validateDisplayName,
   validadeEmail,
@@ -9,6 +10,7 @@ const {
 
 const router = express.Router();
 
+router.get('/', tokenValidator, userController.getAllUsers);
 router.post('/', validateDisplayName,
   validadeEmail,
   validatePwd,
