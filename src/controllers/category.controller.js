@@ -1,10 +1,11 @@
 const { categoryServices } = require('../services');
 const { OK_STATUS, CREATED_STATUS } = require('../utils/httpStatuses');
 
-const { createNew } = categoryServices;
+const { createNew, getAll } = categoryServices;
 
 const getAllCategories = async (_req, res) => {
-  res.status(OK_STATUS).json({ message: 'placeholder' });
+  const response = await getAll();
+  res.status(OK_STATUS).json(response);
 };
 
 const registerCategory = async (req, res) => {
