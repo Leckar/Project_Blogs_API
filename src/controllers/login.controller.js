@@ -1,10 +1,18 @@
-const { OK_STATUS } = require('../utils/httpStatuses');
+const { loginService } = require('../services');
+const { OK_STATUS/* , BAD_REQUEST_STATUS */ } = require('../utils/httpStatuses');
 
-const loginAuthenticator = (req, res) => {
-  const { email, password } = req.body;
+const { loginAuth } = loginService;
 
-  res.status(OK_STATUS).json({ message: `logado com ${email} e ${password}` });
-};
+const loginAuthenticator = async (req, res) => {
+    const { email, password } = req.body;
+    const response = await loginAuth(email, password);
+    if (response.type) {
+      const { type } = response;
+      return res.status(type).json({ message: 'Invalid fields' });
+    }
+    const { token } = response;
+    res.status(OK_STATUS).json({ token });
+}
 
 module.exports = { 
   loginAuthenticator,
