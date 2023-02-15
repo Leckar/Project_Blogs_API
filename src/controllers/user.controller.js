@@ -1,12 +1,18 @@
 const { userServices } = require('../services');
 const { OK_STATUS, CREATED_STATUS } = require('../utils/httpStatuses');
 
-const { createNewUser, getAll } = userServices;
+const { createNewUser, getAll, getOne } = userServices;
 
 const getAllUsers = async (_req, res) => {
   const response = await getAll();
-  console.log(response);
   res.status(OK_STATUS).json(response);
+};
+
+const getTargetUser = async (req, res) => {
+  const { id } = req.params;
+  const { type, result } = await getOne(id);
+  if (type) return res.status(type).json({ message: 'User does not exist' });
+  res.status(OK_STATUS).json(result);
 };
 
 const registrationAuthenticator = async (req, res) => {
@@ -18,6 +24,7 @@ const registrationAuthenticator = async (req, res) => {
 };
 
 module.exports = {
-  registrationAuthenticator,
   getAllUsers,
+  getTargetUser,
+  registrationAuthenticator,
 };

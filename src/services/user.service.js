@@ -1,6 +1,6 @@
 const { User } = require('../models');
 const { generateToken } = require('../auth/jwtManager');
-const { CONFLICT_STATUS } = require('../utils/httpStatuses');
+const { CONFLICT_STATUS, NOT_FOUND_STATUS } = require('../utils/httpStatuses');
 
 const createNewUser = async (params) => {
   const { email } = params;
@@ -20,7 +20,17 @@ const getAll = async () => {
   return result;
 };
 
+const getOne = async (id) => {
+  const result = await User.findByPk(id);
+  if (result) {
+  result.password = undefined;
+  return { type: null, result };
+  }
+  return { type: NOT_FOUND_STATUS, result: '' };
+};
+
 module.exports = {
   createNewUser,
   getAll,
+  getOne,
 };

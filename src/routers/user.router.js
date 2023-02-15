@@ -10,6 +10,7 @@ const {
 
 const router = express.Router();
 
+router.get('/:id', tokenValidator, userController.getTargetUser);
 router.get('/', tokenValidator, userController.getAllUsers);
 router.post('/', validateDisplayName,
   validadeEmail,
