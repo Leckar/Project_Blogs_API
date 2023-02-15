@@ -1,4 +1,4 @@
-const { BAD_REQUEST_STATUS } = require("../utils/httpStatuses");
+const { BAD_REQUEST_STATUS } = require('../utils/httpStatuses');
 
 const errMsg = { message: 'Some required fields are missing' };
 module.exports = (req, res, next) => {
