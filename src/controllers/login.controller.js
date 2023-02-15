@@ -1,7 +1,7 @@
-const { loginService } = require('../services');
-const { OK_STATUS/* , BAD_REQUEST_STATUS */ } = require('../utils/httpStatuses');
+const { loginServices } = require('../services');
+const { OK_STATUS } = require('../utils/httpStatuses');
 
-const { loginAuth } = loginService;
+const { loginAuth } = loginServices;
 
 const loginAuthenticator = async (req, res) => {
     const { email, password } = req.body;
@@ -12,7 +12,7 @@ const loginAuthenticator = async (req, res) => {
     }
     const { token } = response;
     res.status(OK_STATUS).json({ token });
-}
+};
 
 module.exports = { 
   loginAuthenticator,
