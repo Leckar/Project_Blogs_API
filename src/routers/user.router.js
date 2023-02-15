@@ -6,7 +6,7 @@ const {
   validadeEmail,
   validatePwd,
   validateImage,
-} = require('../middlewares/userFieldsValidation');
+} = require('../middlewares/userFieldsValidator');
 
 const router = express.Router();
 
