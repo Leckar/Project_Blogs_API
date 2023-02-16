@@ -10,16 +10,12 @@ const contentValidation = (param) => {
   if (!param || param.length < 1) return true;
   return false;
 };
-const categoryIdsValidation = (param) => {
-  if (!param || param.length < 1) return true;
-  return false;
-};
-module.exports = ({ title, content, categoryIds }) => {
+module.exports = (req, res, next) => {
+  const { title, content } = req.body;
   const checkTitle = titleValidation(title);
   const checkContent = contentValidation(content);
-  const checkCategoryIds = categoryIdsValidation(categoryIds);
-  if (checkTitle || checkContent || checkCategoryIds) {
-    return { type: BAD_REQUEST_STATUS, response };
+  if (checkTitle || checkContent) {
+    return res.status(BAD_REQUEST_STATUS).json(response);
   }
-  return { type: null, response: '' };
+  next();
 };
