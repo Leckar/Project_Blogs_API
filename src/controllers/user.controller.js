@@ -1,7 +1,13 @@
 const { userServices } = require('../services');
-const { OK_STATUS, CREATED_STATUS } = require('../utils/httpStatuses');
+const { OK_STATUS, CREATED_STATUS, NO_CONTENT_STATUS } = require('../utils/httpStatuses');
 
-const { createNewUser, getAll, getOne } = userServices;
+const { createNewUser, deleteUser, getAll, getOne } = userServices;
+
+const deleteMe = async (req, res) => {
+  const { user: { id } } = req.body;
+  await deleteUser(id);
+  res.status(NO_CONTENT_STATUS).end();
+};
 
 const getAllUsers = async (_req, res) => {
   const response = await getAll();
@@ -24,6 +30,7 @@ const registrationAuthenticator = async (req, res) => {
 };
 
 module.exports = {
+  deleteMe,
   getAllUsers,
   getTargetUser,
   registrationAuthenticator,

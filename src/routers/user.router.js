@@ -11,6 +11,7 @@ const {
 const router = express.Router();
 
 router.get('/:id', tokenValidator, userController.getTargetUser);
+router.delete('/me', tokenValidator, userController.deleteMe);
 router.get('/', tokenValidator, userController.getAllUsers);
 router.post('/', validateDisplayName,
   validadeEmail,

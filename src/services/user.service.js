@@ -12,6 +12,12 @@ const createNewUser = async (params) => {
   return { type: null, token };
 };
 
+const deleteUser = async (id) => {
+  await User.destroy({
+    where: { id },
+  });
+};
+
 const getAll = async () => {
   const result = await User.findAll();
   result.forEach((e) => {
@@ -31,6 +37,7 @@ const getOne = async (id) => {
 
 module.exports = {
   createNewUser,
+  deleteUser,
   getAll,
   getOne,
 };
