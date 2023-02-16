@@ -1,11 +1,17 @@
 const { BlogPost, Category, User } = require('../models');
 const postValidation = require('./validations/postValidation');
-const { BAD_REQUEST_STATUS } = require('../utils/httpStatuses');
+const { BAD_REQUEST_STATUS, NOT_FOUND_STATUS } = require('../utils/httpStatuses');
 
-const errObj = { 
+const errObjNewPost = { 
   type: BAD_REQUEST_STATUS,
   response: {
     message: 'one or more "categoryIds" not found',
+  },
+};
+const errObjFindById = { 
+  type: NOT_FOUND_STATUS,
+  response: {
+    message: 'Post does not exist',
   },
 };
 
@@ -22,7 +28,7 @@ const createNew = async ({ user: { id: userId }, title, content, categoryIds }) 
   const check = postValidation({ title, content, categoryIds });
   if (check.type) return check;
   const catIdValid = await categoryIdsValidation(categoryIds);
-  if (!catIdValid) return errObj;
+  if (!catIdValid) return errObjNewPost;
   const blogPosts = await BlogPost.create({ userId, title, content });
   await blogPosts.addCategory(categoryIds); // O aluno Rafael França me indicou o uso dessa função do sequelize;
   const response = await BlogPost.findByPk(blogPosts.id);
@@ -37,7 +43,25 @@ const getAll = async () => {
   return result;
 };
 
+const getById = async (id) => {
+  const result = await BlogPost.findOne({ 
+    where: { id },
+    include: [{
+      model: User,
+      as: 'user',
+      attributes: { exclude: ['password'] },
+    },
+    {
+      model: Category,
+      as: 'categories',
+    }],
+  });
+  if (!result) return errObjFindById;
+  return { type: null, response: result };
+};
+
 module.exports = {
   createNew,
   getAll,
+  getById,
 };
