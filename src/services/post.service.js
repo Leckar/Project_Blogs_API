@@ -1,6 +1,7 @@
 const { BlogPost, Category, User } = require('../models');
 const { BAD_REQUEST_STATUS, NOT_FOUND_STATUS,
   UNAUTHORIZED_STATUS } = require('../utils/httpStatuses');
+const categoryIdsValidation = require('./validations/categoryIdsValidation');
 
 const errObjNewPost = { 
   type: BAD_REQUEST_STATUS,
@@ -21,23 +22,18 @@ const errObjUpdatePost = {
   },
 };
 
-const categoryIdsValidation = async (data) => {
-  const arr = await Promise.all(data.map(async (id) => {
-    const result = await Category.findByPk(id);
-    if (result) return true;
-    return false;
-  }));
-  return arr.every((e) => e === true);
-};
+// const postOwnershipValidation
 
 const createNew = async ({ user: { id: userId }, title, content, categoryIds }) => {
-  const catIdValid = await categoryIdsValidation(categoryIds);
-  if (!catIdValid) return errObjNewPost;
+  const check = await categoryIdsValidation(categoryIds);
+  if (!check) return errObjNewPost;
   const blogPosts = await BlogPost.create({ userId, title, content });
   await blogPosts.addCategory(categoryIds); // O aluno Rafael França me indicou o uso dessa função do sequelize;
   const response = await BlogPost.findByPk(blogPosts.id);
   return { type: null, response };
 };
+
+// const deletePost = (id, userId)
 
 const getAll = async () => {
   const result = await BlogPost.findAll({
