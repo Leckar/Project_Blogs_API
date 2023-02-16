@@ -65,13 +65,14 @@ const getById = async (id) => {
 };
 
 const updatePost = async (id, userId, title, content) => {
-  const result = await BlogPost.update({
+  const check = await BlogPost.findByPk(id);
+  if (check.userId !== userId) return errObjUpdatePost;
+  await BlogPost.update({
     title,
     content,
   }, {
-    where: { id, userId },
+    where: { id },
   });
-  if (!result) return errObjUpdatePost;
   const response = await getById(id);
   return response;
 };
