@@ -1,7 +1,17 @@
 const { postServices } = require('../services');
-const { CREATED_STATUS, OK_STATUS } = require('../utils/httpStatuses');
+const { CREATED_STATUS, NO_CONTENT_STATUS,
+  OK_STATUS } = require('../utils/httpStatuses');
 
-const { createNew, getAll, getById, updatePost } = postServices;
+const { createNew, deletePost, getAll,
+   getById, updatePost } = postServices;
+
+const deleteUserPost = async (req, res) => {
+  const { user: { id: userId } } = req.body;
+  const { id } = req.params;
+  const { type, response } = await deletePost(id, userId);
+  if (type) return res.status(type).json(response);
+  res.status(NO_CONTENT_STATUS).end();
+};
 
 const getAllPosts = async (_req, res) => {
   const response = await getAll();
@@ -38,6 +48,7 @@ const updateUserPost = async (req, res) => {
 };
 
 module.exports = {
+  deleteUserPost,
   getAllPosts,
   getPostById,
   postCreation,

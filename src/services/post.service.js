@@ -2,6 +2,7 @@ const { BlogPost, Category, User } = require('../models');
 const { BAD_REQUEST_STATUS, NOT_FOUND_STATUS,
   UNAUTHORIZED_STATUS } = require('../utils/httpStatuses');
 const categoryIdsValidation = require('./validations/categoryIdsValidation');
+const postOwnershipValidation = require('./validations/postOwnershipValidation');
 
 const errObjNewPost = { 
   type: BAD_REQUEST_STATUS,
@@ -15,14 +16,19 @@ const errObjFindById = {
     message: 'Post does not exist',
   },
 };
-const errObjUpdatePost = { 
+const errObjUnauthUsr = { 
   type: UNAUTHORIZED_STATUS,
   response: {
     message: 'Unauthorized user',
   },
 };
 
-// const postOwnershipValidation
+const errObjPostNotFound = { 
+  type: NOT_FOUND_STATUS,
+  response: {
+    message: 'Post does not exist',
+  },
+};
 
 const createNew = async ({ user: { id: userId }, title, content, categoryIds }) => {
   const check = await categoryIdsValidation(categoryIds);
@@ -33,7 +39,16 @@ const createNew = async ({ user: { id: userId }, title, content, categoryIds }) 
   return { type: null, response };
 };
 
-// const deletePost = (id, userId)
+const deletePost = async (id, userId) => {
+  const realPost = await BlogPost.findByPk(id);
+  if (!realPost) return errObjPostNotFound;
+  const check = await postOwnershipValidation(id, userId);
+  if (!check) return errObjUnauthUsr;
+  await BlogPost.destroy({
+    where: { id },
+  });
+  return { type: null, response: '' };
+};
 
 const getAll = async () => {
   const result = await BlogPost.findAll({
@@ -61,8 +76,8 @@ const getById = async (id) => {
 };
 
 const updatePost = async (id, userId, title, content) => {
-  const check = await BlogPost.findByPk(id);
-  if (check.userId !== userId) return errObjUpdatePost;
+  const check = await postOwnershipValidation(id, userId);
+  if (!check) return errObjUnauthUsr;
   await BlogPost.update({
     title,
     content,
@@ -75,6 +90,7 @@ const updatePost = async (id, userId, title, content) => {
 
 module.exports = {
   createNew,
+  deletePost,
   getAll,
   getById,
   updatePost,

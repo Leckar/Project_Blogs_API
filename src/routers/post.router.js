@@ -11,6 +11,7 @@ router.put('/:id',
   tokenValidator,
   postUpdateValidator,
   postController.updateUserPost);
+router.delete('/:id', tokenValidator, postController.deleteUserPost);
 router.get('/', tokenValidator, postController.getAllPosts);
 router.post('/',
   tokenValidator,
