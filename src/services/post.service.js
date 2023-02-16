@@ -1,4 +1,4 @@
-const { BlogPost, Category } = require('../models');
+const { BlogPost, Category, User } = require('../models');
 const postValidation = require('./validations/postValidation');
 const { BAD_REQUEST_STATUS } = require('../utils/httpStatuses');
 
@@ -29,6 +29,15 @@ const createNew = async ({ user: { id: userId }, title, content, categoryIds }) 
   return { type: null, response };
 };
 
+const getAll = async () => {
+  const result = await BlogPost.findAll({
+    include: [{ model: User, as: 'user', attributes: { exclude: ['password'] } },
+    { model: Category, as: 'categories' }],
+  });
+  return result;
+};
+
 module.exports = {
   createNew,
+  getAll,
 };
