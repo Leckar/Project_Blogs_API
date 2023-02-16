@@ -1,6 +1,6 @@
 const { BlogPost, Category, User } = require('../models');
-const postValidation = require('./validations/postValidation');
-const { BAD_REQUEST_STATUS, NOT_FOUND_STATUS } = require('../utils/httpStatuses');
+const { BAD_REQUEST_STATUS, NOT_FOUND_STATUS,
+  UNAUTHORIZED_STATUS } = require('../utils/httpStatuses');
 
 const errObjNewPost = { 
   type: BAD_REQUEST_STATUS,
@@ -14,6 +14,12 @@ const errObjFindById = {
     message: 'Post does not exist',
   },
 };
+const errObjUpdatePost = { 
+  type: UNAUTHORIZED_STATUS,
+  response: {
+    message: 'Unauthorized user',
+  },
+};
 
 const categoryIdsValidation = async (data) => {
   const arr = await Promise.all(data.map(async (id) => {
@@ -25,8 +31,6 @@ const categoryIdsValidation = async (data) => {
 };
 
 const createNew = async ({ user: { id: userId }, title, content, categoryIds }) => {
-  const check = postValidation({ title, content, categoryIds });
-  if (check.type) return check;
   const catIdValid = await categoryIdsValidation(categoryIds);
   if (!catIdValid) return errObjNewPost;
   const blogPosts = await BlogPost.create({ userId, title, content });
@@ -60,8 +64,21 @@ const getById = async (id) => {
   return { type: null, response: result };
 };
 
+const updatePost = async (id, userId, title, content) => {
+  const result = await BlogPost.update({
+    title,
+    content,
+  }, {
+    where: { id, userId },
+  });
+  if (!result) return errObjUpdatePost;
+  const response = await getById(id);
+  return response;
+};
+
 module.exports = {
   createNew,
   getAll,
   getById,
+  updatePost,
 };
